@@ -1,4 +1,4 @@
-<img width="600" alt="dropkan_explained" src="https://github.com/KindXiaoming/pykan/assets/23551623/a2d2d225-b4d2-4c1e-823e-bc45c7ea96f9](https://github.com/Ghaith81/dropkan/blob/master/DropKAN_explained.JPG)">
+<img width="600" alt="dropkan_explained" src="https://github.com/Ghaith81/dropkan/blob/master/DropKAN_explained.JPG">
 
 
 # Dropout Kolmogorov-Arnold Networks (DropKAN) 
