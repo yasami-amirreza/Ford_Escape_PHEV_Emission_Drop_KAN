@@ -3,7 +3,7 @@
 
 # Dropout Kolmogorov-Arnold Networks (DropKAN) 
 
-This is the github repo for the paper ["DropKAN: Regularizing KANs by masking post-activations"](https://arxiv.org/abs/2407.13044). 
+This is the github repo for the paper ["DropKAN: Regularizing KANs by masking post-activations"](https://arxiv.org/abs/2407.13044). DropKAN operates by randomly masking some of the post-activations within the KANs computation graph, while scaling-up the retained post-activations.
 ## Citation
 ```python
 @article{altarabichi2024dropkan,
