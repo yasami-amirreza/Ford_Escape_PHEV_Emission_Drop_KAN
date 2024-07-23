@@ -79,7 +79,7 @@ class DropKAN(nn.Module):
     '''
 
     def __init__(self, width=None, grid=3, k=3, noise_scale=0.1, scale_base_mu=0.0, scale_base_sigma=1.0, base_fun=torch.nn.SiLU(), symbolic_enabled=True, bias_trainable=False, grid_eps=1.0, grid_range=[-1, 1], sp_trainable=True, sb_trainable=True,
-                 drop_rate=0.0, drop_mode='lps', drop_scale=True, device='cpu', seed=0):
+                 drop_rate=0.0, drop_mode='postact', drop_scale=True, device='cpu', seed=0):
         '''
         initalize a KAN model
         
