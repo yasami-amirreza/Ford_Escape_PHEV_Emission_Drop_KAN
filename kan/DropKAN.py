@@ -110,7 +110,7 @@ class DropKAN(nn.Module):
             drop_rate: list
                 A list of floats of the rate of drops for the DropKAN mask. Default: 0.0.
             drop_mode: str
-                Accept the following values 'postspline' the drop mask is applied to the layer's postsplines, 'postact' the drop mask is applied to the layer's postacts, 'dropout' applies a standard dropout layer to the inputs. Default: 'lps'.
+                Accept the following values 'postspline' the drop mask is applied to the layer's postsplines, 'postact' the drop mask is applied to the layer's postacts, 'dropout' applies a standard dropout layer to the inputs. Default: 'postact'.
              drop_scale: bool
                 If true, the retained postsplines/postacts are scaled by a factor of 1/(1-drop_rate). Default: True
             device : str
