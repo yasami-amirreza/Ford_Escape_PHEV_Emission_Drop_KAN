@@ -253,22 +253,22 @@ class DropKANLayer(nn.Module):
                 y = torch.median(y, dim=1).values  # torch.median returns a tuple (values, indices)
         elif self.neuron_fun == 'norm':
                 y = torch.norm(y, dim=1)
-        elif self.neuron_fun == 'any':
-                y = torch.any(y, dim=1).float()  # Convert boolean result to float
-        elif self.neuron_fun == 'all':
-                y = torch.all(y, dim=1).float()  # Convert boolean result to float
-        elif self.neuron_fun == 'cumsum':
-                y = torch.cumsum(y, dim=1)  # Cumulative sum along dim=2
-        elif self.neuron_fun == 'cumprod':
-                y = torch.cumprod(y, dim=1)  # Cumulative product along dim=2
-        elif self.neuron_fun == 'amax':
-                y = torch.amax(y, dim=1)  # Maximum value along dim=2
-        elif self.neuron_fun == 'amin':
-                y = torch.amin(y, dim=1)  # Minimum value along dim=2
-        elif self.neuron_fun == 'argmax':
-                y = torch.argmax(y, dim=1).float()  # Indices of max values along dim=2
-        elif self.neuron_fun == 'argmin':
-                y = torch.argmin(y, dim=1).float()  # Indices of min values along dim=2
+        #elif self.neuron_fun == 'any':
+        #        y = torch.any(y, dim=1).float()  # Convert boolean result to float
+        #elif self.neuron_fun == 'all':
+        #        y = torch.all(y, dim=1).float()  # Convert boolean result to float
+        #elif self.neuron_fun == 'cumsum':
+        #        y = torch.cumsum(y, dim=1)  # Cumulative sum along dim=2
+        #elif self.neuron_fun == 'cumprod':
+        #        y = torch.cumprod(y, dim=1)  # Cumulative product along dim=2
+        #elif self.neuron_fun == 'amax':
+        #        y = torch.amax(y, dim=1)  # Maximum value along dim=2
+        #elif self.neuron_fun == 'amin':
+        #        y = torch.amin(y, dim=1)  # Minimum value along dim=2
+        #elif self.neuron_fun == 'argmax':
+        #        y = torch.argmax(y, dim=1).float()  # Indices of max values along dim=2
+        #elif self.neuron_fun == 'argmin':
+        #        y = torch.argmin(y, dim=1).float()  # Indices of min values along dim=2
         #elif self.neuron_fun == 'sumln':
         #        y = torch.sum(y, dim=1)
         #        y = nn.LayerNorm(self.out_dim, elementwise_affine=False)(y)

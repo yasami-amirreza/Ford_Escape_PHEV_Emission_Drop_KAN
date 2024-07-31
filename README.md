@@ -1,9 +1,9 @@
-<img width="1200" alt="dropkan_explained" src="https://github.com/Ghaith81/dropkan/blob/master/DropKAN_explained.JPG">
-
+This is the github repository for the papers: ["DropKAN: Regularizing KANs by masking post-activations"](https://arxiv.org/abs/2407.13044) and ["Rethinking the Function of Neurons in KANs
+"](https://arxiv.org/abs/2407.20667). 
 
 # Dropout Kolmogorov-Arnold Networks (DropKAN) 
-
-This is the github repository for the paper: ["DropKAN: Regularizing KANs by masking post-activations"](https://arxiv.org/abs/2407.13044). DropKAN operates by randomly masking some of the post-activations within the KANs computation graph, while scaling-up the retained post-activations.
+<img width="1200" alt="dropkan_explained" src="https://github.com/Ghaith81/dropkan/blob/master/DropKAN_explained.JPG">
+DropKAN operates by randomly masking some of the post-activations within the KANs computation graph, while scaling-up the retained post-activations.
 
 ## How to use
 
@@ -22,7 +22,17 @@ The DropKAN model can be used similar to KAN to create a model of DropKANLayers.
   journal={arXiv preprint arXiv:2407.13044},
   year={2024}
 }
+
 ```
+
+#Rethinking the Function of Neurons in KANs
+In this paper, we suggest replacing the summation in KAN neurons with an averaging function. Our experiments show that employing the average function results in more stable training, ensuring that the inputs remain within the effective range of the spline activations. Utilizing the average function clearly aligns with the Kolmogorov-Arnold representation theorem.
+
+## How to use
+To change the neuron function the parameter neuron_fun must be passed to the DropKANLayer with one of the following possible values:
+ ['sum', 'min', 'max', 'multiply', 'mean', 'std', 'var', 'median',
+ and 'norm']
+
 
 ## Contact
 For any questions, please contact: mohammed_ghaith.altarabichi@hh.se
