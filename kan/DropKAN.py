@@ -3,6 +3,7 @@ import torch.nn as nn
 import numpy as np
 from .KANLayer import *
 from .DropKANLayer import *
+from .LayerScaling import LayerScaling
 from .Symbolic_KANLayer import *
 from .LBFGS import *
 import os
@@ -79,7 +80,7 @@ class DropKAN(nn.Module):
     '''
 
     def __init__(self, width=None, grid=3, k=3, noise_scale=0.1, scale_base_mu=0.0, scale_base_sigma=1.0, base_fun=torch.nn.SiLU(), symbolic_enabled=True, bias_trainable=False, grid_eps=1.0, grid_range=[-1, 1], sp_trainable=True, sb_trainable=True,
-                 drop_rate=0.0, drop_mode='postact', drop_scale=True, device='cpu', seed=0):
+                 drop_rate=0.0, drop_mode='postact', drop_scale=True, neuron_fun=None, input_preprocessing='ls', device='cpu', seed=0):
         '''
         initalize a KAN model
         
@@ -147,7 +148,7 @@ class DropKAN(nn.Module):
             scale_base = scale_base_mu * 1 / np.sqrt(width[l]) + \
                          scale_base_sigma * (torch.randn(width[l] , width[l + 1], ) * 2 - 1) * 1/np.sqrt(width[l])
             sp_batch = DropKANLayer(in_dim=width[l], out_dim=width[l + 1], num=grid, k=k, noise_scale=noise_scale, scale_base=scale_base, scale_sp=1., base_fun=base_fun, grid_eps=grid_eps, grid_range=grid_range, sp_trainable=sp_trainable,
-                                sb_trainable=sb_trainable, drop_rate=drop_rate[l], drop_mode=drop_mode, drop_scale=drop_scale, device=device)
+                                sb_trainable=sb_trainable, drop_rate=drop_rate[l], drop_mode=drop_mode, drop_scale=drop_scale, neuron_fun=neuron_fun[l], input_preprocessing=input_preprocessing, device=device)
             self.act_fun.append(sp_batch)
 
             # bias
@@ -914,18 +915,18 @@ class DropKAN(nn.Module):
                 loss.backward()
                 optimizer.step()
 
-            test_loss = loss_fn_eval(self.forward(dataset['test_input'].to(self.device)), dataset['test_label'].to(self.device))
+            #test_loss = loss_fn_eval(self.forward(dataset['test_input'].to(self.device)), dataset['test_label'].to(self.device))
 
-            if _ % log == 0:
-                pbar.set_description("train loss: %.2e | test loss: %.2e | reg: %.2e " % (torch.sqrt(train_loss).cpu().detach().numpy(), torch.sqrt(test_loss).cpu().detach().numpy(), reg_.cpu().detach().numpy()))
+            #if _ % log == 0:
+            #    pbar.set_description("train loss: %.2e | test loss: %.2e | reg: %.2e " % (torch.sqrt(train_loss).cpu().detach().numpy(), torch.sqrt(test_loss).cpu().detach().numpy(), reg_.cpu().detach().numpy()))
 
             if metrics != None:
                 for i in range(len(metrics)):
                     results[metrics[i].__name__].append(metrics[i]().item())
 
-            results['train_loss'].append(torch.sqrt(train_loss).cpu().detach().numpy())
-            results['test_loss'].append(torch.sqrt(test_loss).cpu().detach().numpy())
-            results['reg'].append(reg_.cpu().detach().numpy())
+            #results['train_loss'].append(torch.sqrt(train_loss).cpu().detach().numpy())
+            #results['test_loss'].append(torch.sqrt(test_loss).cpu().detach().numpy())
+            #results['reg'].append(reg_.cpu().detach().numpy())
 
             if save_fig and _ % save_fig_freq == 0:
                 self.plot(folder=img_folder, in_vars=in_vars, out_vars=out_vars, title="Step {}".format(_), beta=beta)

@@ -3,6 +3,7 @@ import torch.nn as nn
 import numpy as np
 from .spline import *
 from .utils import sparse_mask
+from .LayerScaling import LayerScaling
 
 
 class DropKANLayer(nn.Module):
@@ -63,7 +64,7 @@ class DropKANLayer(nn.Module):
             unlock already locked activation functions
     """
 
-    def __init__(self, in_dim=3, out_dim=2, num=5, k=3, noise_scale=0.1, scale_base=1.0, scale_sp=1.0, base_fun=torch.nn.SiLU(), grid_eps=0.02, grid_range=[-1, 1], sp_trainable=True, sb_trainable=True, save_plot_data = True, device='cpu', sparse_init=False, drop_rate=0.0, drop_mode='postact', drop_scale=True):
+    def __init__(self, in_dim=3, out_dim=2, num=5, k=3, noise_scale=0.1, scale_base=1.0, scale_sp=1.0, base_fun=torch.nn.SiLU(), grid_eps=0.02, grid_range=[-1, 1], sp_trainable=True, sb_trainable=True, save_plot_data = True, device='cpu', sparse_init=False, drop_rate=0.0, drop_mode='postact', drop_scale=True, neuron_fun=None, input_preprocessing='ls'):
         ''''
         initialize a DropKANLayer
         
@@ -144,6 +145,11 @@ class DropKANLayer(nn.Module):
         self.drop_rate = drop_rate
         self.drop_mode = drop_mode
         self.drop_scale = drop_scale
+        self.neuron_fun = neuron_fun
+        self.neuron_train = torch.nn.Parameter(torch.ones(1)).requires_grad_(True)
+        self.count = 0
+        self.total = 0
+        self.input_preprocessing = input_preprocessing
         
         ### remove weight_sharing & lock parts
         #self.weight_sharing = torch.arange(out_dim*in_dim).reshape(out_dim, in_dim)
@@ -184,8 +190,15 @@ class DropKANLayer(nn.Module):
         '''
         batch = x.shape[0]
 
+        if self.input_preprocessing == 'ls':
+            x = LayerScaling()(x)
+        elif self.input_preprocessing == 'ln':
+            x = nn.LayerNorm(self.in_dim, elementwise_affine=False)(x)
+
+        #print(self.drop_mode, self.drop_rate, self.drop_scale)
         if self.training:
             if self.drop_mode == 'dropout' and self.drop_rate > 0 and self.drop_scale:
+                    #print('dropout with scale')
                     mask = torch.empty(x.shape, device=x.device).bernoulli_(1 - self.drop_rate)
                     x = x * mask / (1 - self.drop_rate)
             elif self.drop_mode == 'dropout' and self.drop_rate > 0 and not self.drop_scale:
@@ -221,8 +234,59 @@ class DropKANLayer(nn.Module):
             elif self.drop_mode == 'postact' and self.drop_rate > 0 and not self.drop_scale:
                     mask = torch.empty(y.shape, device=y.device).bernoulli_(1 - self.drop_rate)
                     y = y * mask
+                
+        if self.neuron_fun == 'sum':
+                y = torch.sum(y, dim=1)
+        elif self.neuron_fun == 'min':
+                y = torch.min(y, dim=1).values  # torch.min returns a tuple (values, indices)
+        elif self.neuron_fun == 'max':
+                y = torch.max(y, dim=1).values  # torch.max returns a tuple (values, indices)
+        elif self.neuron_fun == 'multiply':
+                y = torch.prod(y, dim=1)  # Element-wise product along dim=2
+        elif self.neuron_fun == 'mean':
+                y = torch.mean(y, dim=1)
+        elif self.neuron_fun == 'std':
+                y = torch.std(y, dim=1)
+        elif self.neuron_fun == 'var':
+                y = torch.var(y, dim=1)
+        elif self.neuron_fun == 'median':
+                y = torch.median(y, dim=1).values  # torch.median returns a tuple (values, indices)
+        elif self.neuron_fun == 'norm':
+                y = torch.norm(y, dim=1)
+        elif self.neuron_fun == 'any':
+                y = torch.any(y, dim=1).float()  # Convert boolean result to float
+        elif self.neuron_fun == 'all':
+                y = torch.all(y, dim=1).float()  # Convert boolean result to float
+        elif self.neuron_fun == 'cumsum':
+                y = torch.cumsum(y, dim=1)  # Cumulative sum along dim=2
+        elif self.neuron_fun == 'cumprod':
+                y = torch.cumprod(y, dim=1)  # Cumulative product along dim=2
+        elif self.neuron_fun == 'amax':
+                y = torch.amax(y, dim=1)  # Maximum value along dim=2
+        elif self.neuron_fun == 'amin':
+                y = torch.amin(y, dim=1)  # Minimum value along dim=2
+        elif self.neuron_fun == 'argmax':
+                y = torch.argmax(y, dim=1).float()  # Indices of max values along dim=2
+        elif self.neuron_fun == 'argmin':
+                y = torch.argmin(y, dim=1).float()  # Indices of min values along dim=2
+        #elif self.neuron_fun == 'sumln':
+        #        y = torch.sum(y, dim=1)
+        #        y = nn.LayerNorm(self.out_dim, elementwise_affine=False)(y)
+        #elif self.neuron_fun == 'sumlnkan':
+        #        y = torch.sum(y, dim=1)
+        #        y = LayerNormKAN()(y)
+        else:
+            raise ValueError(
+                "Unsupported function. Choose from 'sum', 'min', 'max', 'multiply', 'mean', 'std', 'var', 'median', 'norm', 'any', 'all', 'prod', 'cumsum', 'cumprod', 'amax', 'amin', 'argmax', 'argmin'.")
 
-        y = torch.sum(y, dim=1)  # shape (batch, out_dim)
+        # Count the number of elements between -1 and 1 (inclusive)
+        #print(y)
+        #print(((y >= -1) & (y <= 1)).sum().item())
+        #print(y[0].shape[0])
+        self.count += ((y >= -1) & (y <= 1)).sum().item()
+        self.total += y.numel()
+
+        #y = torch.sum(y, dim=1)  # shape (batch, out_dim)
         return y, preacts, postacts, postspline
 
     def update_grid_from_samples(self, x):

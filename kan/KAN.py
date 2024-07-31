@@ -909,8 +909,8 @@ class KAN(nn.Module):
 
             test_loss = loss_fn_eval(self.forward(dataset['test_input'].to(self.device)), dataset['test_label'].to(self.device))
 
-            if _ % log == 0:
-                pbar.set_description("train loss: %.2e | test loss: %.2e | reg: %.2e " % (torch.sqrt(train_loss).cpu().detach().numpy(), torch.sqrt(test_loss).cpu().detach().numpy(), reg_.cpu().detach().numpy()))
+            #if _ % log == 0:
+            #    pbar.set_description("train loss: %.2e | test loss: %.2e | reg: %.2e " % (torch.sqrt(train_loss).cpu().detach().numpy(), torch.sqrt(test_loss).cpu().detach().numpy(), reg_.cpu().detach().numpy()))
 
             if metrics != None:
                 for i in range(len(metrics)):
