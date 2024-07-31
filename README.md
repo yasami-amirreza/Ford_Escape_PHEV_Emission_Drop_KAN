@@ -34,6 +34,14 @@ To change the neuron function, the parameter neuron_fun must be passed to the Dr
  ['sum', 'min', 'max', 'multiply', 'mean', 'std', 'var', 'median',
  and 'norm'].
 
+## Citation
+```python
+@article{altarabichi2024rethinking,
+  title={Rethinking the Function of Neurons in KANs},
+  author={Altarabichi, Mohammed Ghaith},
+  journal={arXiv preprint arXiv:2407.20667},
+  year={2024}
+}
 
 ## Contact
 For any questions, please contact: mohammed_ghaith.altarabichi@hh.se
