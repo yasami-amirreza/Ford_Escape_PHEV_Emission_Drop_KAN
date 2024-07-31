@@ -25,7 +25,7 @@ The DropKAN model can be used similar to KAN to create a model of DropKANLayers.
 
 ```
 
-#Rethinking the Function of Neurons in KANs
+# Rethinking the Function of Neurons in KANs
 In this paper, we suggest replacing the summation in KAN neurons with an averaging function. Our experiments show that employing the average function results in more stable training, ensuring that the inputs remain within the effective range of the spline activations. Utilizing the average function clearly aligns with the Kolmogorov-Arnold representation theorem.
 
 ## How to use
