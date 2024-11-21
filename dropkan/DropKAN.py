@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import random
 import copy
+
+
 RESOURCE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "figures")
 
 class DropKAN(nn.Module):
